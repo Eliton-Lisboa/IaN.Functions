@@ -44,6 +44,10 @@ const _INFOS = {
             data: { func: data, implements: 'String' }
         }
 
+        if (!Array.isArray(_$add)) {
+            _$add = [_$add]
+        }
+
         for (let x = 0; x < _$add.length; x++) {
             for (let y = 0; y < Object.keys(add[_$add[x]].func).length; y++) {
                 eval(`${add[_$add[x]].implements}.${Object.keys(add[_$add[x]].func)[y]} = ${_$add[x]}.${Object.keys(add[_$add[x]].func)[y]}`)
