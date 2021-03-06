@@ -89,7 +89,7 @@ const arrays = {
         }
 
         for (let x = 0; x < $array.length; x++) {
-            if (!arrays.verifyValues(_positions, x)) {
+            if (!arrays.verifyValues(_$positions, x)) {
                 _newArray.push( $array[x] )
             }
         }
