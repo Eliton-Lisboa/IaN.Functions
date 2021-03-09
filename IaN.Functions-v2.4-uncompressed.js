@@ -1,5 +1,5 @@
 /*
-    @preserve JS.Functions v2.3
+    @preserve JS.Functions v2.4
     @license Copyright 2021 Eliton Lisboa
     @license MIT Licensed (https://github.com/Eliton-Lisboa/JS.Functions/blob/main/LICENSE)
 */
