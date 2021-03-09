@@ -50,7 +50,7 @@ código nativo JavaScript.
 
 Com isto ja podemos utiliza-las por meio dos comandos:
 
-    String.cryptography
+    Data.cryptography
     String.verifyValues
     Array.removePositions
     Array.addEquivalence
@@ -284,6 +284,51 @@ Esta função serve para validar valores de tipo telefônico por enquanto.
            '9999999'
        )
     <· false
+
+### createDB();
+Esta função serve para criar um mini banco de dados apenas com tabelas simples
+feitas de objetos e strings. Para usar é simples! Exemplo:
+
+<br/>
+Criar banco de dados
+
+    >  const db = data.createDB()
+    <· undefined
+
+Criar tabela
+
+    >  db.createTable('users')
+    <· undefined
+
+Ver todas as tabelas
+
+    >  db.tables
+    <· {users: {...}}
+
+Criar registro em uma tabela
+
+    >  db.tables.users.addRow({ name: 'Eliton', age: 15 })
+    <· undefined
+
+Pegar registro na tabela
+
+    >  db.tables.users.getRow(0)
+    <· v { name: 'eliton', age: 15 }
+
+Editar registro na tabela
+
+    >  db.tables.users.updateRow(0, { name: 'eliton' })
+    <· undefined
+
+Pegar todos os registros da tabela
+
+    >  db.tables.users.rows()
+    <· [{...}]
+
+Remover tabela do banco
+
+    >  db.removeTable('users')
+    <· undefined
 
 Espero que consiga aproveitar bem todas as funções da stack.
 

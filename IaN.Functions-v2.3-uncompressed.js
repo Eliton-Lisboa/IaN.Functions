@@ -5,6 +5,8 @@
 */
 'use strict'
 
+const Data = {}
+
 const _DEBUG = {
     alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
     names: ['João', 'Pedro', 'Victor', 'Maria', 'Eliton', 'Andrielly', 'Eduardo', 'Eduarda', 'Joaquin', 'Marcos', 'Stefane', 'Jeazon', 'Andréa'],
@@ -41,7 +43,7 @@ const _INFOS = {
         const add = {
             arrays: { func: arrays, implements: 'Array' },
             strings: { func: strings, implements: 'String' },
-            data: { func: data, implements: 'String' }
+            data: { func: data, implements: 'Data' },
         }
 
         if (!Array.isArray(_$add)) {
@@ -346,7 +348,7 @@ const strings = {
 }
 
 const data = {
-    cryptography: (_string = '', _keys = _DEBUG.keys, _mode = true) => {
+    cryptography: (_string, _keys = _DEBUG.keys, _mode = true) => {
         let _newString = ''
 
         const morse = () => {
@@ -514,6 +516,40 @@ const data = {
         }
 
         return _result
+    },
+    createDB: () => {
+        const database = {}
+        const tables = {}
+
+        function createTable(table) {
+            database[table] = []
+            tables[table] = {
+                addRow: row => {
+                    database[table].push(row)
+                },
+                getRow: id => {
+                    return database[table][id]
+                },
+                updateRow: (id, newRow) => {
+                    Object.assign(database[table][id], newRow)
+                },
+                rows: () => {
+                    return database[table]
+                }
+            }
+
+        }
+
+        function removeTable(table) {
+            delete database[table]
+            delete tables[table]
+        }
+
+        return {
+            createTable,
+            removeTable,
+            tables
+        }
     }
 
 }
