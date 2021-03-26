@@ -2,7 +2,9 @@
 
 JavaScript não tem tantas funções que sejam simples para iniciantes ou até
 para pessoas mais experientes. Então pensando nisso eu criei uma stack de
-funções que vão de funções de string até funções para tratar arrays. 😃
+funções que vão de funções de string até funções para tratar arrays. 😃  
+
+E tem total compatibilidade com node.js.
 
 ## 📘 Como utiliza-la
 Para utilizar os funções é simples, se você estiver utilizando html é apenas
@@ -29,10 +31,21 @@ E para acessar essas propriedades segue o código abaixo.
     Função: _DEBUG.function
     Código html: _DEBUG.html
 
+E para rever um valor que foi recentemente pego, provavelmente ele
+estará na variável $0, exemplo:
+
+    >  arrays.removeValues(['0', '1', null], null)
+    <· undefined
+    >  $0
+    <· ['0', '1']
+
+Mas caso o resultado que você esteja procurando não esteja nesta variável
+basta procurar no histórico que fica em _INFOS.historic.
+
 ## ❕ Funções
 As funções estão distribuídas em objetos com o nome indicando para que servem.
-Sabendo disso os objetos que a stack tem são "arrays", "strings" e "data", cada
-objeto remete a um uso.
+Sabendo disso os objetos que a stack tem são "arrays", "strings", "data" e
+"visual", cada objeto remete a um uso.  
 
 ### 🚨 Atenção
 Todas as funções mostradas que contem o campo "values" pode ser passado
@@ -41,7 +54,7 @@ Toas as funções mostradas que contem o campo "arrays" deve ser passado
 uma array com todas as array que deseja caso contrario a função não funcionara
 como esperado.
 
-### _INFOS.add(add = ['arrays', 'strings', 'data'])
+### _INFOS.add(add = ['arrays', 'strings', 'data', 'visual'])
 Esta função serve para adicionar todas as funções da stack ao
 código nativo JavaScript.
 
@@ -52,7 +65,7 @@ Com isto ja podemos utiliza-las por meio dos comandos:
 
     Data.cryptography
     String.verifyValues
-    Array.removePositions
+    Visual.createElements
     Array.addEquivalence
 
 Para adicionar apenas as funções que preferir você pode utilizar os
@@ -285,7 +298,7 @@ Esta função serve para validar valores de tipo telefônico por enquanto.
        )
     <· false
 
-### createDB();
+### createDB()
 Esta função serve para criar um mini banco de dados apenas com tabelas simples
 feitas de objetos e strings. Para usar é simples! Exemplo:
 
@@ -330,6 +343,116 @@ Remover tabela do banco
     >  db.removeTable('users')
     <· undefined
 
+## ❗ visual
+### visual.createElements()
+Esta função serve para criar elementos na pagina com mais facilidade
+ela permite falar aonde os elementos serão criados e também adicionar
+atributos a esses elementos.
+
+<br/>
+Primeiro precisamos instanciar
+
+    >  const ce = visual.createElements()
+    <· undefined
+
+Agora podemos falar aonde queremos que seja colocado os elementos
+
+    >  ce.on( document.querySelector('body') )
+    <· undefined
+
+E já podemos criar um elemento com uma função também
+
+    >  ce.create('button', {
+           innerText: 'click here',
+           listen: {
+               event: 'click',
+               fun: () => {
+                   alert('ok')
+               }
+           }
+       })
+    <· {on: ƒ}
+
+Assim o elemento já sera adicionado no local, mas você pode notar
+que quando criamos um elemento é retornado uma função chamado "on"
+ela serve para quando criamos um container e queremos que os próximos
+elementos sejam guardados nela, podemos usar-la assim:
+
+    >  ce.create('div', { id: 'container' }).on()
+
+E assim poderemos continuar criando elementos que eles serão guardados
+dentro desta div
+
+### visual.framePanels(_panels)
+Essa função serve para criar uma hierarquia de telas ou divs ela serve
+para ir e voltar telas. Primeiro precisamos instancia-la passando as telas
+
+    >  const frames = visual.framePanels(
+           [
+               document.getElementById('login'),
+               document.getElementById('panel')
+           ]
+       )
+    <· {next: ƒ, back: ƒ, setInfos: ƒ}
+
+Ele ira ocultar todas as telas menos a primeira com a classe 'd-none', mas
+caso queira trocar é só fazer isso:
+
+    >  frames.setInfos({ hideClass: '< classe para ocultar >' })
+    <· undefined
+
+Para ir para a proxima tela basta fazer isto:
+
+    >  frames.next()
+    <· undefined
+
+Para voltar:
+
+    >  frames.back()
+    <· undefined
+
+E podemos também adicionar mais de uma escolha de tela, exemplo:
+
+    >  const frames = visual.framePanels(
+           [
+               document.getElementById('selectOption'),
+               [
+                   document.getElementById('enterTitle'),
+                   document.getElementById('remove')
+               ],
+               document.getElementById('enterContents')
+           ]
+       )
+    <· {next: ƒ, back: ƒ, setInfos: ƒ}
+
+Então para podermos ir para a proxima tela passaremos um parâmetro, com
+o id da tela dentro da array, exemplo:
+
+    >  frames.next(0)
+    <· undefined
+
+Vai para a tela de "enterTitle".  
+Podemos também mudar a tela onde estamos usando o setInfos:
+
+    >  frames.setInfos({ now: 0 })
+    <· undefined
+
+Assim fomos para a tela inicial, mas para não dar conflito precisaremos
+limpar o histórico de navegação da função:
+
+    >  _INFOS.historic.framePanels = []
+    <· undefined
+
+## ❗ get(_query)
+Esta função funciona como um "document.querySelectorAll" mas ela transform
+a array de html em array normal e se mais de um elemento é selecionado ela não
+retorna-ra uma array com apenas um elemento mas sim apenas o elemento, exemplo:
+
+    >  get('body')
+    <· <body></body>
+
+<br/>
+<hr>
 Espero que consiga aproveitar bem todas as funções da stack.
 
 Qualquer duvida sobre qualquer coisa é só me contactar por uma issue!

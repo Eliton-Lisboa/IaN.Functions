@@ -1,5 +1,126 @@
-<script src='./IaN.Functions-v2.3-uncompressed.js'></script>
-<script>
-    _INFOS.add()
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'/>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
 
-</script>
+    <script src='./IaN.Functions-v2.4-uncompressed.js'></script>
+
+    <title>Document</title>
+</head>
+<body>
+
+    <div id='selectOption'>
+        <h1>Select a option</h1>
+
+        <div>
+            <button class='0 next'>Add</button>
+            <button class='1 next delete'>Remove</button>
+        </div>
+    </div>
+
+    <!-- Add -->
+    <div>
+        <div id='enterTitle'>
+            <button class='back'>Back</button>
+            <h1>Enter a title</h1>
+
+            <div>
+                <input type='text'/>
+                <button class='0 next'>Next</button>
+            </div>
+        </div>
+
+        <div id='enterContents'>
+            <button class='back'>Back</button>
+            <h1>Enter the contents</h1>
+
+            <div>
+                <input type=''/>
+                <button class='home'>Post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete -->
+    <div id='delete'>
+        <button class='back'>Back</button>
+        <h1>Remove a post</h1>
+
+        <hr/>
+        <div></div>
+    </div>
+
+    <script>
+        _INFOS.add()
+
+        let posts = []
+        let tmp = 0
+
+        const frames = Visual.framePanels(
+            [
+                get('#selectOption'),
+                [
+                    get('#enterTitle'),
+                    get('#delete')
+                ],
+                get('#enterContents')
+            ]
+        )
+
+        const $title_txb = get('#enterTitle div input')
+        const $contents_txb = get('#enterContents div input')
+        const $delete_div = get('#delete div')
+        const $btn_back = get('.back')
+        const $btn_next = get('.next')
+        const $btn_home = get('.home')
+
+        $btn_back.forEach(btn => {
+            btn.addEventListener('click', () => {
+                frames.back()
+            })
+        })
+
+        $btn_next.forEach(btn => {
+            if (btn.classList[2] == 'delete') {
+                btn.addEventListener('click', () => {
+                    $delete_div.innerHTML = ''
+                    const ce = Visual.createElements()
+                    ce.on($delete_div)
+
+                    posts.forEach(post => {
+                        const containerName = `container-${tmp}`
+                        const post_number = tmp
+
+                        ce.create('div', { className: containerName }).on(get(`.${containerName}`))
+                        ce.create('h2', { innerText: post.title })
+                        ce.create('p', { innerText: post.contents })
+                        ce.create('button', { innerText: 'remove', listen: {
+                            event: 'click',
+                            fun: () => {
+                                posts = Array.removePositions(posts, post_number)
+                                get(`.${containerName}`).remove()
+                            }
+                        } })
+
+                        tmp++
+                    })
+
+                })
+            }
+
+
+            btn.addEventListener('click', () => { frames.next(btn.classList[0]) })
+        })
+
+        $btn_home.addEventListener('click', () => {
+            posts.push({ title: $title_txb.value, contents: $contents_txb.value })
+
+            _INFOS.historic.framePanels = []
+            frames.setInfos({ now: 0 })
+        })
+
+    </script>
+</body>
+</html>

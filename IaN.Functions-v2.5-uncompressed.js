@@ -1,11 +1,13 @@
 /*
-    @preserve JS.Functions v2.4
+    @preserve JS.Functions v2.5
     @license Copyright 2021 Eliton Lisboa
     @license MIT Licensed (https://github.com/Eliton-Lisboa/JS.Functions/blob/main/LICENSE)
 */
 'use strict'
 
 const Data = {}
+const Visual = {}
+var $0 = ''
 
 const _DEBUG = {
     alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
@@ -31,24 +33,30 @@ const _DEBUG = {
 }
 
 const _INFOS = {
-    out: (_$value) => {
+    out: _$value => {
+        let _result = ''
+
         if (Array.isArray(_$value) && _$value.length == 1) {
-            return _$value[0]
+            _result = _$value[0]
         }
         else {
-            return _$value
+            _result = _$value
         }
+
+        $0 = _result
+        _INFOS.historic.functions.push(_result)
+        return _result
     },
-    add: (_$add = ['arrays', 'strings', 'data']) => {
+    add: _$add => {
         const add = {
             arrays: { func: arrays, implements: 'Array' },
             strings: { func: strings, implements: 'String' },
             data: { func: data, implements: 'Data' },
+            visual: { func: visual, implements: 'Visual' }
         }
 
-        if (!Array.isArray(_$add)) {
-            _$add = [_$add]
-        }
+        if (!_$add) { _$add = Object.keys(add) }
+        else if (!Array.isArray(_$add)) { _$add = [_$add] }
 
         for (let x = 0; x < _$add.length; x++) {
             for (let y = 0; y < Object.keys(add[_$add[x]].func).length; y++) {
@@ -57,42 +65,33 @@ const _INFOS = {
 
         }
 
+        try { get('body').innerHTML +=`<style>.d-none { display: none; }</style>` }
+        catch (_err) {}
+    },
+    historic: {
+        get: [],
+        framePanels: [],
+        functions: []
     }
 }
 
 const arrays = {
     removeValues: ($array, _$values) => {
         let _newArray = []
-        let _tmpBool = true
 
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
-
-        for (let x = 0; x < $array.length; x++)
-        {
-            _tmpBool = true
-
-            for (let y = 0; y < _$values.length; y++)
-            {
-                if ($array[x] === _$values[y]) {
-                    _tmpBool = false
-                }
-            }
-
-            if (_tmpBool) {
+        for (let x = 0; x < $array.length; x++) {
+            if (!arrays.verifyValues(_$values, $array[x])) {
                 _newArray.push( $array[x] )
             }
         }
 
+        $0 = _newArray
         return _newArray
     },
     removePositions: ($array, _$positions) => {
         let _newArray = []
 
-        if (!Array.isArray(_$positions)) {
-            _$positions = [_$positions]
-        }
+        if (!Array.isArray(_$positions)) { _$positions = [_$positions] }
 
         for (let x = 0; x < $array.length; x++) {
             if (!arrays.verifyValues(_$positions, x)) {
@@ -100,19 +99,17 @@ const arrays = {
             }
         }
 
+        $0 = _newArray
         return _newArray
     },
     removeValuesEquivalence: ($arrays, _$values) => {
-        let _newArray = []
+        let _newArrays = []
         let _tmpBool = false
     
         $arrays = arrays.addEquivalence($arrays)
 
-        for (let x = 0; x < $arrays.length; x++) { _newArray.push( [] ) }
-
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
+        for (let x = 0; x < $arrays.length; x++) { _newArrays.push([]) }
 
         for (let x = 0; x < $arrays[0].length; x++) {
             _tmpBool = false
@@ -130,21 +127,20 @@ const arrays = {
 
             if (_tmpBool) {
                 for (let y = 0; y < $arrays.length; y++) {
-                    _newArray[y].push( $arrays[y][x] )
+                    _newArrays[y].push( $arrays[y][x] )
                 }
             }
 
         }
 
-        return _newArray
+        $0 = _newArrays
+        return _newArrays
     },
     verifyValues: ($array, _$values) => {
         let _result = []
         let _tmpBool = false
     
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
     
         for (let x = 0; x < _$values.length; x++) {
             _tmpBool = false
@@ -172,13 +168,11 @@ const arrays = {
         let _result = []
         let _tmpBool = false
     
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
 
         for (let x = 0; x < _$values.length; x++) {
-            _result.push( [] )
-            
+            _result.push([])
+
             for (let y = 0; y < $array.length; y++) {
                 _tmpBool = false
     
@@ -193,100 +187,76 @@ const arrays = {
     
         }
 
-        for (let x = 0; x < _result.length; x++) {
-            if (_result[x].length == 1) {
-                _result[x] = _result[x][0]
-            }
-        }
-
         return _INFOS.out(_result)
     },
     addEquivalence: ($arrays, _add) => {
         let _newArrays = $arrays
-    
-        for (let x = 0; x < $arrays.length; x++)
-        {
-            if ($arrays[x].length - 1 < $arrays[arrays.check.larger($arrays)].length - 1)
-            {
-                for (let y = 0; y < $arrays[arrays.check.larger($arrays)].length - $arrays[x].length + 1; y++)
-                {
-                    _newArrays[x].push( _add )
+        const largerArray = arrays.check.larger($arrays)
+
+        for (let x = 0; x < $arrays.length; x++) {
+            if (x !== largerArray) {
+                const addOn = $arrays[largerArray].length - $arrays[x].length
+
+                for (let y = 0; y < addOn; y++) {
+                    _newArrays[x].push(_add)
                 }
             }
         }
-    
+
+        $0 = _newArrays
         return _newArrays
     },
     check: {
         larger: $arrays => {
             let _large = 0
-        
+
             for (let x = 0; x < $arrays.length; x++) {
                 if ($arrays[x].length > $arrays[_large].length) {
                     _large = x
                 }
             }
-        
+
+            $0 = _large
             return _large
         },
         small: $arrays => {
             let _small = 0
-        
+
             for (let x = 0; x < $arrays.length; x++) {
                 if ($arrays[x].length < $arrays[_small].length) {
                     _small = x
                 }
             }
-        
+
+            $0 = _small
             return _small
         }
     },
-    changeValues: ($arrays, _$values, _$newValues) => {
-        let _newArrays = []
-        let _tmpBool = false
-        let _tmp = 0
-    
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-            _$newValues = [_$newValues]
-        }
-    
-        for (let x = 0; x < $arrays.length; x++) {
-            _newArrays.push( [] )
-            
-            for (let y = 0; y < $arrays[x].length; y++) {
-                _tmpBool = false
-    
-                for (let z = 0; z < _$values.length; z++)
-                {
-                    if ($arrays[x][y] === _$values[z]) {
-                        _tmpBool = true
-                        _tmp = z
-                    }
-    
-                }
-    
-                if (_tmpBool) {
-                    _newArrays[x].push( _$newValues[_tmp] )
-                }
-                else {
-                    _newArrays[x].push( $arrays[x][y] )
-                }
-    
+    changeValues: ($array, _$values, _$newValues) => {
+        let _newArray = []
+
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
+        if (!Array.isArray(_$newValues)) { _$newValues = [_$newValues] }
+
+        for (let x = 0; x < $array.length; x++)
+        {
+            if (arrays.verifyValues(_$values, $array[x])) {
+                _newArray.push(_$newValues[arrays.valuesPosition(_$values, $array[x])])
             }
-    
+            else {
+                _newArray.push($array[x])
+            }
+
         }
     
-        return _newArrays
+        $0 = _newArray
+        return _newArray
     },
     sumValues: ($array, _$values) => {
         let _counts = []
 
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
-
-        for (let x = 0; x < _$values.length; x++) { _counts.push(-1) }
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
+        _counts = arrays.addEquivalence([ _$values, _counts ], -1)[1]
 
         for (let x = 0; x < $array.length; x++) {
             for (let y = 0; y < _$values.length; y++) {
@@ -305,12 +275,10 @@ const strings = {
     valuesPosition: (_string, _$values) => {
         let _result = []
 
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
+        if (!Array.isArray(_$values)) { _$values = [_$values] }
+        _result = arrays.addEquivalence([ _$values, _result ], [])[1]
 
         for (let x = 0; x < _$values.length; x++) {
-            _result.push(-1)
 
             for (let y = 0; y < _string.length; y++) {
 
@@ -321,26 +289,26 @@ const strings = {
 
         }
 
+        for (let x = 0; x < _result.length; x++) {
+            if (Array.isArray(_result[x])) {
+                _result[x] = -1
+            }
+        }
+
         return _INFOS.out(_result)
     },
     verifyValues: (_string, _$values) => {
-        let _result = []
+        let _result = strings.valuesPosition(_string, _$values)
 
-        if (!Array.isArray(_$values)) {
-            _$values = [_$values]
-        }
-
-        for (let x = 0; x < _$values.length; x++) {
-            _result.push(false)
-
-            for (let y = 0; y < _string.length; y++) {
-
-                if (_string.substring(y, y + _$values[x].length) === _$values[x]) {
-                    _result[x] = true
-                }
+        for (let x = 0; x < _result.length; x++) {
+            if (_result[x] == -1) {
+                _result[x] = false
             }
-
+            else {
+                _result[x] = true
+            }
         }
+
 
         return _INFOS.out(_result)
     }
@@ -436,7 +404,7 @@ const data = {
 
             }
 
-            return _newString.trim()
+            return _INFOS.out(_newString.trim())
         }
 
         const ascii = () => {
@@ -453,7 +421,7 @@ const data = {
                 }
             }
 
-            return _newString
+            return _INFOS.out(_newString)
         }
 
         const roman = () => {
@@ -478,7 +446,7 @@ const data = {
                 })
             }
 
-            return _newString
+            return _INFOS.out(_newString)
         }
 
         let _key = ''
@@ -502,7 +470,7 @@ const data = {
         }
 
         return {
-            result: _newString,
+            result: _INFOS.out(_newString),
             morse,
             ascii,
             roman
@@ -513,43 +481,191 @@ const data = {
 
         if (_type == 'phone') {
             _result = /(?:\+?55\s?)?(?:\(?\d{2}\)?[\s-]?)?\d{4,5}[-\s]?\d{4}/g.test(_text)
+
+            if (_text.length < 8) { _result = false }
         }
 
-        return _result
+        return _INFOS.out(_result)
     },
     createDB: () => {
         const database = {}
         const tables = {}
 
-        function createTable(table) {
-            database[table] = []
-            tables[table] = {
-                addRow: row => {
-                    database[table].push(row)
+        function createTable(_table) {
+            database[_table] = []
+            tables[_table] = {
+                addRow: _row => {
+                    database[_table].push(_row)
                 },
-                getRow: id => {
-                    return database[table][id]
+                getRow: _id => {
+                    return database[_table][_id]
                 },
-                updateRow: (id, newRow) => {
-                    Object.assign(database[table][id], newRow)
+                updateRow: (_id, _newRow) => {
+                    Object.assign(database[_table][_id], _newRow)
                 },
                 rows: () => {
-                    return database[table]
+                    return database[_table]
                 }
             }
 
+            _INFOS.out(_table)
         }
 
-        function removeTable(table) {
+        function dropTable(table) {
             delete database[table]
             delete tables[table]
         }
 
         return {
             createTable,
-            removeTable,
+            dropTable,
             tables
         }
     }
 
 }
+
+const visual = {
+    createElements: () => {
+        let add_on = ''
+
+        const on = on => {
+            add_on = on || $0
+        }
+
+        const create = (ele, infos) => {
+            const element = document.createElement(ele)
+
+            Object.keys(infos).forEach(info => {
+                element[info] = infos[info]
+            })
+
+            try {
+                element.addEventListener(infos.listen.event, infos.listen.fun)
+            }
+            catch (_err) {}
+
+            add_on.appendChild(element)
+            $0 = infos.id || infos.className || infos.name || element
+
+            const addOn = () => {
+                on(element)
+            }
+
+            return {
+                on: addOn
+            }
+        }
+
+        return {
+            on,
+            create
+        }
+    },
+    framePanels: _panels => {
+        const panels = _panels
+        const infos = {
+            now: 0,
+            hideClass: 'd-none'
+        }
+
+        const next = _branch => {
+            if (infos.now == panels.length - 1) { throw('The index selected is greater than the number of panels') }
+            const historic = _INFOS.historic.framePanels
+
+            if (Array.isArray(panels[infos.now])) {
+                panels[infos.now][historic[historic.length - 1]].classList.add(infos.hideClass)
+            }
+            else {
+                panels[infos.now].classList.add(infos.hideClass)
+            }
+
+            if (Array.isArray(panels[infos.now + 1])) {
+                panels[infos.now + 1][_branch].classList.remove(infos.hideClass)
+                _INFOS.historic.framePanels.push(_branch)
+            }
+            else {
+                panels[infos.now + 1].classList.remove(infos.hideClass)
+                _INFOS.historic.framePanels.push(infos.now + 1)
+            }
+
+            infos.now++
+        }
+
+        const back = () => {
+            if (infos.now == 0) { throw('The selected index is less than the number of panels') }
+            const historic = _INFOS.historic.framePanels
+
+            if (Array.isArray(panels[infos.now])) {
+                panels[infos.now][historic[historic.length - 1]].classList.add(infos.hideClass)
+            }
+            else {
+                panels[infos.now].classList.add(infos.hideClass)
+            }
+
+            if (Array.isArray(panels[infos.now - 1])) {
+                panels[infos.now - 1][historic[historic.length - 2]].classList.remove(infos.hideClass)
+            }
+            else {
+                panels[infos.now - 1].classList.remove(infos.hideClass)
+            }
+
+            _INFOS.historic.framePanels.pop()
+            infos.now--
+        }
+
+        const setInfos = _infos => {
+            Object.assign(infos, _infos)
+
+            const hidePanels = _panels => {
+                _panels.forEach(_panel => {
+                    if (Array.isArray(_panel)) {
+                        hidePanels(_panel)
+                    }
+                    else {
+                        _panel.classList.add(infos.hideClass)
+                    }
+
+                })
+            }
+            hidePanels(panels)
+            panels[infos.now].classList.remove(infos.hideClass)
+        }
+        setInfos(infos)
+
+        return {
+            next,
+            back,
+            setInfos
+        }
+    }
+
+}
+
+const get = _query => {
+    try {
+        const elements = document.querySelectorAll(_query)
+        const array = []
+
+        for (let x = 0; x < elements.length; x++) {
+            array.push(elements[x])
+        }
+
+        _INFOS.historic.get.push( _INFOS.out(array) )
+        return _INFOS.out(array)
+    }
+    catch (_err) {}
+}
+
+try {
+    module.exports = {
+        Data,
+        Visual,
+        _DEBUG,
+        _INFOS,
+        arrays,
+        strings,
+        data
+    }
+
+} catch (_err) {}
